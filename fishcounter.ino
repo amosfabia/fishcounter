@@ -11,7 +11,7 @@ bool oldstate_3 = 0;
 
 int fishcount = 0;
 int firstpress = 0; //for reset button
-int timer = 0;
+
 
 
 void setup() {
@@ -25,6 +25,8 @@ void setup() {
   oldstate = digitalRead(pin_1);
   oldstate_2 = digitalRead(pin_2);
   oldstate_3 = digitalRead(pin_3);
+
+  LoRaSetup();
 }
 
 void loop() {
@@ -32,6 +34,6 @@ void loop() {
   oldstate = checkState(pin_1, oldstate);
   oldstate_2 = checkState(pin_2, oldstate_2);
   oldstate_3 = checkState(pin_3, oldstate_3);
-  sendLoraEvery(10000);
+
 
 }
