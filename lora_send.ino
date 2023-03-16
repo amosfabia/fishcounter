@@ -6,8 +6,8 @@ const int irqPin = 2;         // change for your board; must be a hardware inter
 bool sentSuccess = true;     //switch to true when esp8266 replied
 byte acknowledge = 11;        //symbol or word to check from esp8266 reply(callback)dd
 
-byte localAddress = 0xFF;     // address of this device
-byte destination = 0xBB;      // destination to send to
+byte localAddress = 0xBB;     // address of this device
+byte destination = 0xFF;      // destination to send to
 long lastSendTime = 0;        // last send time
 int interval = 5000;
 
@@ -17,7 +17,7 @@ void ISR_sendCount() {
 }
 
 void LoRaSetup() {
-  
+  LoRa.setSpreadingFactor(12);
   LoRa.setSyncWord(0xaa);                         // used to only receive lora with the same syncword, receive lora within the network only
   LoRa.setPins(csPin, resetPin, irqPin);
   if (!LoRa.begin(433E6)) {                       // initialize ratio at 915 MHz
