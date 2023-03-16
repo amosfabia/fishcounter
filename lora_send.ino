@@ -4,7 +4,7 @@
 const int csPin = 10;          // LoRa radio chip select
 const int resetPin = -1;       // LoRa radio reset
 const int irqPin = 2;         // change for your board; must be a hardware interrupt pin
-bool sentSuccess = false;     //switch to true when esp8266 replied
+bool sentSuccess = true;     //switch to true when esp8266 replied
 byte acknowledge = 11;        //symbol or word to check from esp8266 reply(callback)dd
 
 byte localAddress = 0xFF;     // address of this device
@@ -12,13 +12,18 @@ byte destination = 0xBB;      // destination to send to
 long lastSendTime = 0;        // last send time
 int interval = 3000;  
 
+void ISR_sendCount(){
+  sentSuccess = false;
+  isCounting = false;
+}
+
 void sendFishCount() {
-  if (!sentSuccess) { //send continuously until esp8266 replied
-    if (millis() - lastSendTime > interval) { //send every interval seconds
-      String message = String(fishcount);   // send a message
+  if (!sentSuccess) {                            //send continuously until esp8266 replied
+    if (millis() - lastSendTime > interval) {    //send every interval seconds
+      String message = String(fishcount);        // send a message
       sendMessage(message);
       Serial.println("Sending " + message);
-      lastSendTime = millis();            // timestamp the message
+      lastSendTime = millis();                    // timestamp the message
     }
   }
 }
@@ -69,6 +74,7 @@ void receiveFromLoRa(){
 
   if (incoming == String(acknowledge)) {
     sentSuccess = true;
+    isCounting = true;
     Serial.println("sent success");
   }
 
