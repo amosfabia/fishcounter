@@ -4,6 +4,8 @@
 #define rstbtn 7
 #define sendCountbttn 3
 
+#include <SPI.h>              // include libraries
+#include <LoRa.h>
 
 void setup() {
   pinMode(sendCountbttn, INPUT_PULLUP);
@@ -13,7 +15,7 @@ void setup() {
   pinMode(rstbtn, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(sendCountbttn), ISR_sendCount, FALLING);
   Serial.begin(9600);
-
+  Serial.println("fishcounter");
   stateIRsensor_init();
   LoRaSetup();
 }
@@ -21,5 +23,5 @@ void setup() {
 void loop() {
   startCounting();
   sendFishCount();        //only start sending when button(interrupt) is pressed
-  receiveFromLoRa();
+  onReceive(LoRa.parsePacket());
 }

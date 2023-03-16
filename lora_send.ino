@@ -1,5 +1,4 @@
-#include <SPI.h>              // include libraries
-#include <LoRa.h>
+
 
 const int csPin = 10;          // LoRa radio chip select
 const int resetPin = -1;       // LoRa radio reset
@@ -10,11 +9,22 @@ byte acknowledge = 11;        //symbol or word to check from esp8266 reply(callb
 byte localAddress = 0xFF;     // address of this device
 byte destination = 0xBB;      // destination to send to
 long lastSendTime = 0;        // last send time
-int interval = 3000;  
+int interval = 5000;
 
-void ISR_sendCount(){
+void ISR_sendCount() {
   sentSuccess = false;
   isCounting = false;
+}
+
+void LoRaSetup() {
+
+  LoRa.setPins(csPin, resetPin, irqPin);
+  if (!LoRa.begin(433E6)) {             // initialize ratio at 915 MHz
+    Serial.println("LoRa init failed. Check your connections.");
+    while (true);                       // if failed, do nothing
+  }
+  Serial.println("LoRa init succeeded.");
+
 }
 
 void sendFishCount() {
@@ -37,18 +47,10 @@ void sendMessage(String outgoing) {
   LoRa.endPacket();                     // finish packet and send it                          // increment message ID
 }
 
-void LoRaSetup() {
-  
-  if (!LoRa.begin(433E6)) {             // initialize ratio at 915 MHz
-    Serial.println("LoRa init failed. Check your connections.");
-    while (true);                       // if failed, do nothing
-  }
-  Serial.println("LoRa init succeeded.");
-  
-}
 
-void receiveFromLoRa(){
-    if (LoRa.parsePacket() == 0) return;          // if there's no packet, return
+
+void onReceive(int packetSize) {
+  if (LoRa.parsePacket() == 0) return;          // if there's no packet, return
 
   // read packet header bytes:
   int recipient = LoRa.read();          // recipient address
