@@ -17,11 +17,12 @@ void ISR_sendCount() {
 }
 
 void LoRaSetup() {
-
+  
+  LoRa.setSyncWord(0xaa);                         // used to only receive lora with the same syncword, receive lora within the network only
   LoRa.setPins(csPin, resetPin, irqPin);
-  if (!LoRa.begin(433E6)) {             // initialize ratio at 915 MHz
+  if (!LoRa.begin(433E6)) {                       // initialize ratio at 915 MHz
     Serial.println("LoRa init failed. Check your connections.");
-    while (true);                       // if failed, do nothing
+    while (true);                                 // if failed, do nothing
   }
   Serial.println("LoRa init succeeded.");
 
@@ -39,12 +40,12 @@ void sendFishCount() {
 }
 
 void sendMessage(String outgoing) {
-  LoRa.beginPacket();                   // start packet
-  LoRa.write(destination);              // add destination address
-  LoRa.write(localAddress);             // add sender address
-  LoRa.write(outgoing.length());        // add payload length
-  LoRa.print(outgoing);                 // add payload
-  LoRa.endPacket();                     // finish packet and send it                          // increment message ID
+  LoRa.beginPacket();                            // start packet
+  LoRa.write(destination);                       // add destination address
+  LoRa.write(localAddress);                      // add sender address
+  LoRa.write(outgoing.length());                 // add payload length
+  LoRa.print(outgoing);                          // add payload
+  LoRa.endPacket();                              // finish packet and send it                          // increment message ID
 }
 
 
@@ -53,9 +54,9 @@ void onReceive(int packetSize) {
   if (LoRa.parsePacket() == 0) return;          // if there's no packet, return
 
   // read packet header bytes:
-  int recipient = LoRa.read();          // recipient address
-  byte sender = LoRa.read();            // sender address
-  byte incomingLength = LoRa.read();    // incoming msg length
+  int recipient = LoRa.read();                  // recipient address
+  byte sender = LoRa.read();                    // sender address
+  byte incomingLength = LoRa.read();            // incoming msg length
 
   String incoming = "";
 
@@ -65,13 +66,13 @@ void onReceive(int packetSize) {
 
   if (incomingLength != incoming.length()) {   // check length for error
     Serial.println("error: message length does not match length");
-    return;                             // skip rest of function
+    return;                                    // skip rest of function
   }
 
   // if the recipient isn't this device or broadcast,
   if (recipient != localAddress && recipient != 0xFF) {
     Serial.println("This message is not for me.");
-    return;                             // skip rest of function
+    return;                                    // skip rest of function
   }
 
   if (incoming == String(acknowledge)) {
