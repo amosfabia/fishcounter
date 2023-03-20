@@ -1,19 +1,26 @@
-
-
-const int csPin = 10;          // LoRa radio chip select
+const byte csPin = 10;          // LoRa radio chip select
 const int resetPin = -1;       // LoRa radio reset
-const int irqPin = 2;         // change for your board; must be a hardware interrupt pin
-bool sentSuccess = true;     //switch to true when esp8266 replied
-byte acknowledge = 11;        //symbol or word to check from esp8266 reply(callback)dd
+const byte irqPin = 2;         // change for your board; must be a hardware interrupt pin
+
+byte acknowledge = 11;        // symbol or word to check from esp8266 reply(callback)dd
 
 byte localAddress = 0xBB;     // address of this device
 byte destination = 0xFF;      // destination to send to
-long lastSendTime = 0;        // last send time
-int interval = 5000;
+
+unsigned long lastSendTime = 0;        // last send time
+int interval = 5000;                   // send msg every 5 seconds
+byte maxSentMsg = 5;                  // continue to send until max limit reached,then show "failed to send"
+byte numSentMsg = 0;                   // track how many msgs already sent
 
 void ISR_sendCount() {
-  sentSuccess = false;
-  isCounting = false;
+  if (state == countingState || state == failedsendState) {
+    state = sendingState;             // pause counting
+    numSentMsg = 0;                   // reset tracking of msgs sent
+  }
+  else if(state == sendSuccessState){
+     state = countingState;
+  }
+  
 }
 
 void LoRaSetup() {
@@ -29,13 +36,19 @@ void LoRaSetup() {
 }
 
 void sendFishCount() {
-  if (!sentSuccess) {                            //send continuously until esp8266 replied
+  if (state == sendingState) {                            //send continuously until esp8266 replied
     if (millis() - lastSendTime > interval) {    //send every interval seconds
       String message = String(fishcount);        // send a message
       sendMessage(message);
       Serial.println("Sending " + message);
       lastSendTime = millis();                    // timestamp the message
+
+      numSentMsg += 1;                              //track how many messages sent
     }
+  }
+
+  if (numSentMsg == maxSentMsg) {
+    state = failedsendState;                           //used to stop sending
   }
 }
 
@@ -48,7 +61,11 @@ void sendMessage(String outgoing) {
   LoRa.endPacket();                              // finish packet and send it                          // increment message ID
 }
 
-
+void listenForCallback() {
+  if (state == sendingState) {
+    onReceive(LoRa.parsePacket());  //only read received data when sending to another lora started
+  }
+}
 
 void onReceive(int packetSize) {
   if (LoRa.parsePacket() == 0) return;          // if there's no packet, return
@@ -76,9 +93,10 @@ void onReceive(int packetSize) {
   }
 
   if (incoming == String(acknowledge)) {
-    sentSuccess = true;
-    isCounting = true;
-    Serial.println("sent success");
+    state = sendSuccessState;                      //stop sending after received callback
+    Serial.print("sent success");
+    Serial.println("press button to continue counting");
+    numSentMsg = 0;
   }
 
   // if message is for this device, or broadcast, print details:

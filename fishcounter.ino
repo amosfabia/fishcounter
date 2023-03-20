@@ -1,27 +1,42 @@
-#define pin_1 4
-#define pin_2 5
-#define pin_3 6
+#define counter1 4
+#define counter2 5
+#define counter3 6
 #define rstbtn 7
 #define sendCountbttn 3
 
 #include <SPI.h>              // include libraries
 #include <LoRa.h>
 
+byte countingState = 0x0;
+byte sendingState = 0x1;
+byte failedsendState = 0x2;
+byte sendSuccessState = 0x3;
+byte state = countingState;     //default state of device
+
 void setup() {
+
+  pinMode(counter1, INPUT);
+  pinMode(counter2, INPUT);
+  pinMode(counter3, INPUT);
+
   pinMode(sendCountbttn, INPUT_PULLUP);
-  pinMode(pin_1, INPUT);
-  //  pinMode(pin_2, INPUT);
-  //  pinMode(pin_3, INPUT);
   pinMode(rstbtn, INPUT_PULLUP);
+
   attachInterrupt(digitalPinToInterrupt(sendCountbttn), ISR_sendCount, FALLING);
+
   Serial.begin(9600);
   Serial.println("fishcounter");
+
   stateIRsensor_init();
   LoRaSetup();
 }
 
 void loop() {
-  startCounting();
+  startCounting();        //default state is counting, when interrupt is pressed. pause counting
   sendFishCount();        //only start sending when button(interrupt) is pressed
-  onReceive(LoRa.parsePacket());
+  listenForCallback();
+  
+  if(state == failedsendState){
+     resetbtn();
+  }
 }
