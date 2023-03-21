@@ -8,9 +8,8 @@
 #include <LoRa.h>
 
 byte countingState = 0x0;
-byte sendingState = 0x1;
-byte failedsendState = 0x2;
-byte sendSuccessState = 0x3;
+byte toSendState = 0x1;
+byte sendingState = 0x2;
 byte state = countingState;     //default state of device
 
 void setup() {
@@ -29,18 +28,13 @@ void setup() {
 
   stateIRsensor_init();
   LoRaSetup();
+  Serial.println("counting state");
 }
 
 void loop() {
+
   startCounting();        //default state is counting, when interrupt is pressed. pause counting, start sending
-  sendFishCount();        //only start sending when button(interrupt) is pressed
-  listenForCallback();    
-  
-  if(state == failedsendState){
-    Serial.println("/");
-     resetbtn();
-  }
-  else if(state == countingState){
-    resetcount();
-  }
+  sendFishCount();        //only start sending when button(interrupt) is pressed    
+  resetcountORsendmsg(); 
+
 }

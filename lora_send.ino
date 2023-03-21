@@ -12,21 +12,12 @@ int interval = 3000;                   // send msg every 5 seconds
 byte maxSentMsg = 5;                  // continue to send until max limit reached,then show "failed to send"
 byte numSentMsg = 0;                   // track how many msgs already sent
 
-void ISR_sendCount() {
-  if (state == countingState || state == failedsendState) {
-    state = sendingState;             // pause counting
-    numSentMsg = 0;                   // reset tracking of msgs sent
-  }
-  else if (state == sendSuccessState) {
-    state = countingState;
-  }
-
-}
 
 void LoRaSetup() {
   LoRa.setSpreadingFactor(12);
   LoRa.setSyncWord(0xaa);                         // used to only receive lora with the same syncword, receive lora within the network only
   LoRa.setPins(csPin, resetPin, irqPin);
+  LoRa.onReceive(onReceive);
   if (!LoRa.begin(433E6)) {                       // initialize ratio at 915 MHz
     Serial.println("LoRa init failed. Check your connections.");
     while (true);                                 // if failed, do nothing
@@ -46,12 +37,13 @@ void sendFishCount() {
       numSentMsg += 1;                              //track how many messages sent
     }
     if (numSentMsg == maxSentMsg) {
-      state = failedsendState;                           //used to stop sending
+      state = toSendState;                           //used to stop sending
+      Serial.println("sending failed, long press to resend");
+      numSentMsg = 0;
     }
   }
-
-
 }
+
 
 void sendMessage(String outgoing) {
   LoRa.beginPacket();                            // start packet
@@ -62,11 +54,6 @@ void sendMessage(String outgoing) {
   LoRa.endPacket();                              // finish packet and send it                          // increment message ID
 }
 
-void listenForCallback() {
-  if (state == sendingState) {
-    onReceive(LoRa.parsePacket());  //only read received data when sending to another lora started
-  }
-}
 
 void onReceive(int packetSize) {
   if (LoRa.parsePacket() == 0) return;          // if there's no packet, return
@@ -94,9 +81,8 @@ void onReceive(int packetSize) {
   }
 
   if (incoming == String(acknowledge)) {
-    state = sendSuccessState;                      //stop sending after received callback
+    state = toSendState;                      //stop sending after received callback
     Serial.print("sent success");
-    Serial.println("press button to continue counting");
     numSentMsg = 0;
   }
 
