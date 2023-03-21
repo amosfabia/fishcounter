@@ -2,13 +2,13 @@ const byte csPin = 10;          // LoRa radio chip select
 const int resetPin = -1;       // LoRa radio reset
 const byte irqPin = 2;         // change for your board; must be a hardware interrupt pin
 
-String acknowledge = "success";        // symbol or word to check from esp8266 reply(callback)dd
+String acknowledge = "catfish";        // symbol or word to check from esp8266 reply(callback)dd
 
 byte localAddress = 0xBB;     // address of this device
 byte destination = 0xFF;      // destination to send to
 
 unsigned long lastSendTime = 0;        // last send time
-int interval = 3000;                   // send msg every 5 seconds
+int interval = 5000;                   // send msg every 5 seconds
 byte maxSentMsg = 3;                  // continue to send until max limit reached,then show "failed to send"
 byte numSentMsg = 0;                   // track how many msgs already sent
 
@@ -38,7 +38,6 @@ void sendFishCount() {
       sendMessage(String(fishcount));
       lastSendTime = millis();                    // timestamp the message
 
-      numSentMsg += 1;                              //track how many messages sent
     }
     if (numSentMsg == maxSentMsg) {
       state = toSendState;                           //used to stop sending
@@ -60,8 +59,7 @@ void sendMessage(String outgoing) {
 }
 
 
-void onReceive(int packetSize) {
-  if (LoRa.parsePacket() == 0) return;          // if there's no packet, return
+void onReceive(int packetSize) {        
 
   // read packet header bytes:
   int receiver = LoRa.read();                  // receiver address
@@ -102,8 +100,10 @@ void onReceive(int packetSize) {
 }
 
 void onTxDone() {
+  LoRa_rxMode();
   Serial.print("sent fishcount: ");
   Serial.println(fishcount);
+  numSentMsg += 1;
 }
 
 void LoRa_txMode(){

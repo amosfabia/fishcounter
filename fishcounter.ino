@@ -21,7 +21,7 @@ void setup() {
   pinMode(sendCountbttn, INPUT_PULLUP);
   pinMode(rstbtn, INPUT_PULLUP);
 
-  attachInterrupt(digitalPinToInterrupt(sendCountbttn), ISR_sendCount, FALLING);
+  attachInterrupt(digitalPinToInterrupt(sendCountbttn), my_interrupt_handler, FALLING);
 
   Serial.begin(9600);
   Serial.println("fishcounter");
