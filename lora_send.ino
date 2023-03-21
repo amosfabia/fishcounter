@@ -8,7 +8,7 @@ byte localAddress = 0xBB;     // address of this device
 byte destination = 0xFF;      // destination to send to
 
 unsigned long lastSendTime = 0;        // last send time
-int interval = 5000;                   // send msg every 5 seconds
+int interval = 3000;                   // send msg every 5 seconds
 byte maxSentMsg = 5;                  // continue to send until max limit reached,then show "failed to send"
 byte numSentMsg = 0;                   // track how many msgs already sent
 
@@ -17,10 +17,10 @@ void ISR_sendCount() {
     state = sendingState;             // pause counting
     numSentMsg = 0;                   // reset tracking of msgs sent
   }
-  else if(state == sendSuccessState){
-     state = countingState;
+  else if (state == sendSuccessState) {
+    state = countingState;
   }
-  
+
 }
 
 void LoRaSetup() {
@@ -45,11 +45,12 @@ void sendFishCount() {
 
       numSentMsg += 1;                              //track how many messages sent
     }
+    if (numSentMsg == maxSentMsg) {
+      state = failedsendState;                           //used to stop sending
+    }
   }
 
-  if (numSentMsg == maxSentMsg) {
-    state = failedsendState;                           //used to stop sending
-  }
+
 }
 
 void sendMessage(String outgoing) {

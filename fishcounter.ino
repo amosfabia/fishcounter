@@ -32,11 +32,15 @@ void setup() {
 }
 
 void loop() {
-  startCounting();        //default state is counting, when interrupt is pressed. pause counting
+  startCounting();        //default state is counting, when interrupt is pressed. pause counting, start sending
   sendFishCount();        //only start sending when button(interrupt) is pressed
-  listenForCallback();
+  listenForCallback();    
   
   if(state == failedsendState){
+    Serial.println("/");
      resetbtn();
+  }
+  else if(state == countingState){
+    resetcount();
   }
 }
