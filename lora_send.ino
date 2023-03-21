@@ -10,7 +10,6 @@ unsigned long lastSendTime = 0;        // last send time
 int interval = 5000;                   // send msg every 5 seconds
 
 String acknowledge = "counter";        // symbol or word to check from esp8266 reply(callback)
-byte numSentMsg = 0;                   // track how many msgs already sent
 byte maxSentMsg = 3;                  // continue to send until max limit reached,then show "failed to send"
 
 
