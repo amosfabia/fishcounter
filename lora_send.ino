@@ -79,13 +79,13 @@ void onReceive(int packetSize) {
 
   // if the receiver isn't this device or broadcast,
   if (receiver != localAddress && receiver != 0xFF) {
-    Serial.println("This message is not for me.");
+//    Serial.println("This message is not for me.");
     return;                                    // skip rest of function
   }
 
   if (incoming == acknowledge) {
     state = toSendState;                      //stop sending after received callback
-    Serial.print("sent success");
+    Serial.println("\nSent Success");
     numSentMsg = 0;
   }
 
