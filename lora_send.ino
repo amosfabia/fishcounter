@@ -36,12 +36,14 @@ void sendFishCount() {
     if (millis() - lastSendTime > interval) {    //send every interval seconds
       
       sendMessage(String(fishcount));
+      
       lastSendTime = millis();                    // timestamp the message
 
     }
     if (numSentMsg == maxSentMsg) {
       state = toSendState;                           //used to stop sending
       Serial.println("sending failed, long press to resend");
+      sendingFailed_display();
       numSentMsg = 0;
     }
   }
@@ -86,6 +88,7 @@ void onReceive(int packetSize) {
   if (incoming == acknowledge) {
     state = toSendState;                      //stop sending after received callback
     Serial.println("\nSent Success");
+    sendingSuccess_display();
     numSentMsg = 0;
   }
 

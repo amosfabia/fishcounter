@@ -27,6 +27,7 @@ bool checkState(int pin , bool oldState) {
       Serial.print("  count: ");
       fishcount++;
       Serial.println(fishcount);
+      count_display();
     }
 
   }

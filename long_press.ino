@@ -21,11 +21,13 @@ void resetcountORsendmsg() {
     if ( pressDuration > LONG_PRESS_TIME )
       if (state == countingState) {
         Serial.println("fish count reset");
+        countReset_display();
         fishcount = 0;
       }
       else if (state == toSendState) {
-        Serial.println("Sending count...");
+        Serial.println("Sending count...");        
         state = sendingState;
+        changeState = true;
         numSentMsg = 0;                   // reset tracking of msgs sent
       }
   }

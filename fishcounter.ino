@@ -13,6 +13,8 @@ const byte sendingState = 0x2;
 byte state = countingState;     //default state of device
 byte numSentMsg = 0;                   // track how many msgs already sent
 
+bool changeState = true;
+
 void setup() {
 
   pinMode(counter1, INPUT);
@@ -29,6 +31,7 @@ void setup() {
 
   stateIRsensor_init();
   LoRaSetup();
+  lcd_setup();
   Serial.println("counting state");
 }
 
@@ -37,5 +40,5 @@ void loop() {
   startCounting();        //default state is counting, when interrupt is pressed. pause counting, start sending
   sendFishCount();        //only start sending when button(interrupt) is pressed    
   resetcountORsendmsg(); 
-
+  navigate_display();
 }
