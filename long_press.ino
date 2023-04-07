@@ -1,5 +1,5 @@
 
-const int LONG_PRESS_TIME  = 2000;
+const int LONG_PRESS_TIME  = 1000;
 
 int lastState = LOW;
 int currentState;
