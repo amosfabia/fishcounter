@@ -10,6 +10,8 @@
 const byte countingState = 0x0;
 const byte toSendState = 0x1;
 const byte sendingState = 0x2;
+const byte sendSuccessState = 0x03;
+
 byte state = countingState;     //default state of device
 byte numSentMsg = 0;                   // track how many msgs already sent
 

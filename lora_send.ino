@@ -74,32 +74,30 @@ void onReceive(int packetSize) {
     incoming += (char)LoRa.read();
   }
 
-  if (incomingLength != incoming.length()) {   // check length for error
-    Serial.println("error: message length does not match length");
-    return;                                    // skip rest of function
-  }
+  // if (incomingLength != incoming.length()) {   // check length for error
+  //   Serial.println("error: message length does not match length");
+  //   return;                                    // skip rest of function
+  // }
 
   // if the receiver isn't this device or broadcast,
-  if (receiver != localAddress && receiver != 0xFF) {
-//    Serial.println("This message is not for me.");
-    return;                                    // skip rest of function
-  }
+//   if (receiver != localAddress && receiver != 0xFF) {
+// //    Serial.println("This message is not for me.");
+//     return;                                    // skip rest of function
+//   }
 
   if (incoming == acknowledge) {
-    state = toSendState;                      //stop sending after received callback
-    Serial.println("\nSent Success");
-    sendingSuccess_display();
-    numSentMsg = 0;
+    state = sendSuccessState;                      //stop sending after received callback
+    changeState = true;
   }
 
   // if message is for this device, or broadcast, print details:
-  Serial.println("Received from: 0x" + String(sender, HEX));
-  Serial.println("Sent to: 0x" + String(receiver, HEX));
-  Serial.println("Message length: " + String(incomingLength));
-  Serial.println("Message: " + incoming);
-  Serial.println("RSSI: " + String(LoRa.packetRssi()));
-  Serial.println("Snr: " + String(LoRa.packetSnr()));
-  Serial.println();
+  // Serial.println("Received from: 0x" + String(sender, HEX));
+  // Serial.println("Sent to: 0x" + String(receiver, HEX));
+  // Serial.println("Message length: " + String(incomingLength));
+  // Serial.println("Message: " + incoming);
+  // Serial.println("RSSI: " + String(LoRa.packetRssi()));
+  // Serial.println("Snr: " + String(LoRa.packetSnr()));
+  // Serial.println();
 }
 
 void onTxDone() {
