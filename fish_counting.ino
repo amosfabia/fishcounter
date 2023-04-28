@@ -17,11 +17,10 @@ bool checkState(int pin , bool oldState) {
 
 
   if (newState != oldState) {
-    if (newState == LOW) { //fall edge
+    if (newState != LOW) { //fall edge
       Serial.print("Falling edge  ");
     }
     else {
-
       Serial.print("Rising Edge  pin:");
       Serial.print(pin);
       Serial.print("  count: ");
