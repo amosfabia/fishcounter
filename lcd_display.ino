@@ -28,10 +28,6 @@ void navSend_display() {
   lcd.clear();
   lcd.setCursor(0, 0);
   lcd.print("Send to LoRa");
-  longPressSend();
-}
-
-void longPressSend() {
   lcd.setCursor(0, 1);
   lcd.print("LongPress-send");
 }
@@ -59,14 +55,13 @@ void sendingFailed_display() {
   lcd.setCursor(0, 1);
   lcd.print("Sending Failed");
   delay(2000);
-  longPressSend();
+  lcd.setCursor(0, 1);
+  lcd.print("LongPress-send");
 }
 
 void sendingSuccess_display() {
   lcd.setCursor(0, 1);
   lcd.print("Send Success! ");
-  delay(5000);
-  longPressSend();
 }
 
 void navigate_display() {
@@ -78,7 +73,7 @@ void navigate_display() {
         navCount_display();
         changeState = false;
         break;
-
+        
       case toSendState:
         navSend_display();
         changeState = false;
@@ -87,13 +82,6 @@ void navigate_display() {
       case sendingState:
         sending_display();
         changeState = false;
-        break;
-
-      case sendSuccessState:
-        sendingSuccess_display();
-        changeState = false;
-        state = toSendState;
-        Serial.println("---received---");
         break;
     }
   }

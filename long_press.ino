@@ -1,7 +1,7 @@
 
 const int LONG_PRESS_TIME  = 1000;
 
-int lastState = HIGH;
+int lastState = LOW;
 int currentState;
 unsigned long pressedTime  = 0;
 unsigned long releasedTime = 0;
