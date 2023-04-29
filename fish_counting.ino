@@ -17,12 +17,12 @@ bool checkState(int pin , bool oldState) {
 
 
   if (newState != oldState) {
-    if (newState == LOW) { //fall edge
-      Serial.print("Falling edge  ");
+    if (newState == HIGH) { //fall edge
+      Serial.print("Rising edge  ");
     }
     else {
 
-      Serial.print("Rising Edge  pin:");
+      Serial.print("Falling Edge  pin:");
       Serial.print(pin);
       Serial.print("  count: ");
       fishcount++;
@@ -36,7 +36,7 @@ bool checkState(int pin , bool oldState) {
 
 void startCounting() {
   if (state == countingState) {
-    oldstate = checkState(counter1, oldstate);
+    // oldstate = checkState(counter1, oldstate);
     oldstate_2 = checkState(counter2, oldstate_2);
     oldstate_3 = checkState(counter3, oldstate_3);
   }
